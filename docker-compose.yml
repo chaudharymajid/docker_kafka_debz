@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mssql:
     image: mcr.microsoft.com/mssql/server:latest
@@ -24,9 +22,10 @@ services:
     container_name: init_db
     depends_on:
       - mssql
-    entrypoint: /bin/bash -c "sleep 30 && /opt/mssql-tools/bin/sqlcmd -S mssql_server -U SA -P 'Delta@12345678' -Q \"RESTORE DATABASE [AdventureWorks2019] FROM DISK = '/backup/AdventureWorks2019.bak' WITH MOVE 'AdventureWorks2019' TO '/var/opt/mssql/data/AdventureWorks2019.mdf', MOVE 'AdventureWorks2019_log' TO '/var/opt/mssql/log/AdventureWorks2019_log.ldf'\" && /opt/mssql-tools/bin/sqlcmd -S mssql_server -U SA -P 'Delta@12345678' -i /scripts/enable_cdc.sql"
+    entrypoint: >
+      /bin/bash -c "sleep 30 &&
+      /opt/mssql-tools/bin/sqlcmd -S mssql_server -U SA -P 'Delta@12345678' -i /scripts/sql-server-sakila-schema.sql"
     volumes:
-      - ./backup:/backup
       - ./scripts:/scripts
     networks:
       - docker_sqlsrv_debz_postgres_default
