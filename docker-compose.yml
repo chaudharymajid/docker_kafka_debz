@@ -83,14 +83,31 @@ services:
     container_name: postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 12345678
-      POSTGRES_DB: AdventureWorks2019
+      POSTGRES_PASSWORD: Delta@12345678
+      POSTGRES_DB: sakila
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - docker_sqlsrv_debz_postgres_default
+
+  init-postgres:
+    image: postgres:latest
+    container_name: init_postgres
+    depends_on:
+      - postgres
+    entrypoint: >
+      /bin/bash -c "sleep 10 &&
+      PGPASSWORD=Delta@12345678 psql -h postgres -U postgres -d sakila -f /scripts/postgres-sakila-schema.sql"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Delta@12345678
+    volumes:
+      - ./scripts:/scripts
+    networks:
+      - docker_sqlsrv_debz_postgres_default
+
 
 volumes:
   mssql_data:
