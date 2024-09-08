@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:latest
+    container_name: mssql_server
+    environment:
+      SA_PASSWORD: "Delta@12345678"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql/data
+      - mssql_log:/var/opt/mssql/log
+      - ./backup:/backup
+      - ./scripts:/scripts
+    user: root
+    entrypoint: /bin/bash -c "chmod 777 /var/opt/mssql/data && chmod 777 /var/opt/mssql/log && /opt/mssql/bin/sqlservr"
+    networks:
+      - docker_sqlsrv_debz_postgres_default
+
+  init-db:
+    image: mcr.microsoft.com/mssql-tools
+    container_name: init_db
+    depends_on:
+      - mssql
+    entrypoint: /bin/bash -c "sleep 30 && /opt/mssql-tools/bin/sqlcmd -S mssql_server -U SA -P 'Delta@12345678' -Q \"RESTORE DATABASE [AdventureWorks2019] FROM DISK = '/backup/AdventureWorks2019.bak' WITH MOVE 'AdventureWorks2019' TO '/var/opt/mssql/data/AdventureWorks2019.mdf', MOVE 'AdventureWorks2019_log' TO '/var/opt/mssql/log/AdventureWorks2019_log.ldf'\" && /opt/mssql-tools/bin/sqlcmd -S mssql_server -U SA -P 'Delta@12345678' -i /scripts/enable_cdc.sql"
+    volumes:
+      - ./backup:/backup
+      - ./scripts:/scripts
+    networks:
+      - docker_sqlsrv_debz_postgres_default
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - docker_sqlsrv_debz_postgres_default
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    ports:
+      - "9092:9092"
+    networks:
+      - docker_sqlsrv_debz_postgres_default
+
+  debezium:
+    image: debezium/connect:latest
+    container_name: debezium
+    depends_on:
+      - kafka
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: "kafka:29092"
+      GROUP_ID: "debezium-connect"
+      CONFIG_STORAGE_TOPIC: "debezium-connect-config"
+      OFFSET_STORAGE_TOPIC: "debezium-connect-offsets"
+      STATUS_STORAGE_TOPIC: "debezium-connect-status"
+      CONNECT_METRICS_REPORTER_TIMEOUT_MS: "60000"
+      CONNECT_METRICS_REPORTER_METRICS_RECORDING_INTERVAL_MS: "10000"
+    networks:
+      - docker_sqlsrv_debz_postgres_default
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: AdventureWorks2019
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - docker_sqlsrv_debz_postgres_default
+
+volumes:
+  mssql_data:
+  mssql_log:
+  postgres_data:
+
+networks:
+  docker_sqlsrv_debz_postgres_default:
+    driver: bridge
