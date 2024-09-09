@@ -3,16 +3,21 @@
   "config": {
     "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
     "tasks.max": "1",
-    "topics": "dbserver1.dbo.actor,dbserver1.dbo.film,dbserver1.dbo.customer",
+    "topics": "dbserver1.sakila.dbo.actor,dbserver1.sakila.dbo.film,dbserver1.sakila.dbo.customer",
     "connection.url": "jdbc:postgresql://postgres:5432/sakila",
     "connection.user": "postgres",
     "connection.password": "Delta@12345678",
     "auto.create": "true",
     "auto.evolve": "true",
     "insert.mode": "insert",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "true",
+    "value.converter.schemas.enable": "true",
     "pk.mode": "none",
     "batch.size": "3000",
     "max.retries": "10",
-    "retry.backoff.ms": "3000"
+    "retry.backoff.ms": "3000",    
+    "table.name.format": "public.actor"
   }
 }

@@ -78,6 +78,8 @@ services:
       CONNECT_METRICS_REPORTER_TIMEOUT_MS: "60000"
       CONNECT_METRICS_REPORTER_METRICS_RECORDING_INTERVAL_MS: "10000"
       CONNECT_PLUGIN_PATH: "/kafka/connect"
+      SINK_CONNECTOR_CLASS: "io.confluent.connect.jdbc.JdbcSinkConnector"
+      CLASSPATH: "/kafka/connect/postgresql-42.7.4.jar:/kafka/connect/*"
     volumes:
       - ./setup/source-connector-config.json:/kafka/source-connector-config.json
       - ./setup/sink-connector-config.json:/kafka/sink-connector-config.json
@@ -85,7 +87,7 @@ services:
       - docker_sqlsrv_debz_postgres_default
 
   postgres:
-    image: postgres:latest
+    image: postgres:15-alpine3.20
     container_name: postgres
     environment:
       POSTGRES_USER: postgres

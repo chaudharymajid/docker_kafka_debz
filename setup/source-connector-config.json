@@ -8,6 +8,7 @@
     "database.user": "SA",
     "database.password": "Delta@12345678",
     "database.server.name": "dbserver1",
+    "database.names": "sakila",
     "table.include.list": "dbo.actor,dbo.film,dbo.customer",
     "database.history.kafka.bootstrap.servers": "kafka:29092",
     "database.history.kafka.topic": "schema-changes.sakila",
@@ -17,13 +18,12 @@
     "transforms.unwrap.drop.tombstones": "true",
     "key.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-    "key.converter.schemas.enable": "false",
-    "value.converter.schemas.enable": "false",
+    "key.converter.schemas.enable": "true",
+    "value.converter.schemas.enable": "true",
     "database.encrypt": "false",
     "topic.prefix": "dbserver1",
-    "database.names": "sakila",
+    "snapshot.mode": "initial",
     "schema.history.internal.kafka.bootstrap.servers": "kafka:29092",
-    "schema.history.internal.kafka.topic": "schema-changes.sakila",
-    "snapshot.mode": "initial"
+    "schema.history.internal.kafka.topic": "schema-changes.sakila"
   }
 }
