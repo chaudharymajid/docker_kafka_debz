@@ -1,5 +1,5 @@
 {
-  "name": "sqlserver-source-connector",
+  "name": "sqlserver-connector",
   "config": {
     "connector.class": "io.debezium.connector.sqlserver.SqlServerConnector",
     "tasks.max": "1",
@@ -7,16 +7,19 @@
     "database.port": "1433",
     "database.user": "SA",
     "database.password": "Delta@12345678",
-    "database.dbname": "AdventureWorks2019",
-    "database.server.name": "sqlserver",
-    "database.names": "AdventureWorks2019",
-    "table.include.list": "Purchasing.*,Sales.*",
+    "database.dbname": "sakila",
+    "database.server.name": "dbserver1",
+    "table.include.list": "dbo.actor,dbo.film,dbo.customer",
     "database.history.kafka.bootstrap.servers": "kafka:29092",
-    "database.history.kafka.topic": "dbhistory.sqlserver",
-    "schema.history.internal.kafka.bootstrap.servers": "kafka:29092",
-    "schema.history.internal.kafka.topic": "schemahistory.sqlserver",
-    "topic.prefix": "sqlserver_",
-    "database.encrypt": "false",
-    "trustServerCertificate": "true"
+    "database.history.kafka.topic": "schema-changes.sakila",
+    "include.schema.changes": "true",
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": "false",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter.schemas.enable": "false",
+    "database.encrypt": "false"
   }
 }
