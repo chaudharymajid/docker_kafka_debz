@@ -23,6 +23,7 @@
     "topic.prefix": "dbserver1",
     "database.names": "sakila",
     "schema.history.internal.kafka.bootstrap.servers": "kafka:29092",
-    "schema.history.internal.kafka.topic": "schema-changes.sakila"
+    "schema.history.internal.kafka.topic": "schema-changes.sakila",
+    "snapshot.mode": "initial"
   }
 }
