@@ -7,7 +7,6 @@
     "database.port": "1433",
     "database.user": "SA",
     "database.password": "Delta@12345678",
-    "database.dbname": "sakila",
     "database.server.name": "dbserver1",
     "table.include.list": "dbo.actor,dbo.film,dbo.customer",
     "database.history.kafka.bootstrap.servers": "kafka:29092",
@@ -15,11 +14,15 @@
     "include.schema.changes": "true",
     "transforms": "unwrap",
     "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
-    "transforms.unwrap.drop.tombstones": "false",
+    "transforms.unwrap.drop.tombstones": "true",
     "key.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
     "key.converter.schemas.enable": "false",
     "value.converter.schemas.enable": "false",
-    "database.encrypt": "false"
+    "database.encrypt": "false",
+    "topic.prefix": "dbserver1",
+    "database.names": "sakila",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka:29092",
+    "schema.history.internal.kafka.topic": "schema-changes.sakila"
   }
 }

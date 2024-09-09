@@ -5,6 +5,7 @@ services:
     environment:
       SA_PASSWORD: "Delta@12345678"
       ACCEPT_EULA: "Y"
+      MSSQL_AGENT_ENABLED: "true"
     ports:
       - "1433:1433"
     volumes:
@@ -24,7 +25,8 @@ services:
       - mssql
     entrypoint: >
       /bin/bash -c "sleep 30 &&
-      /opt/mssql-tools/bin/sqlcmd -S mssql_server -U SA -P 'Delta@12345678' -i /scripts/sql-server-sakila-schema.sql"
+      /opt/mssql-tools/bin/sqlcmd -S mssql_server -U SA -P 'Delta@12345678' -i /scripts/sql-server-sakila-schema.sql &&
+      /opt/mssql-tools/bin/sqlcmd -S mssql_server -U SA -P 'Delta@12345678' -i /scripts/enable_cdc.sql"
     volumes:
       - ./scripts:/scripts
     networks:
@@ -61,7 +63,7 @@ services:
       - docker_sqlsrv_debz_postgres_default
 
   debezium:
-    image: debezium/connect:latest
+    image: debezium-connect-sql-connector
     container_name: debezium
     depends_on:
       - kafka
@@ -77,14 +79,10 @@ services:
       CONNECT_METRICS_REPORTER_METRICS_RECORDING_INTERVAL_MS: "10000"
       CONNECT_PLUGIN_PATH: "/kafka/connect"
     volumes:
-      - ./kafka-connect-plugins:/kafka/connect
       - ./setup/source-connector-config.json:/kafka/source-connector-config.json
       - ./setup/sink-connector-config.json:/kafka/sink-connector-config.json
     networks:
       - docker_sqlsrv_debz_postgres_default
-    entrypoint: >
-      /bin/bash -c "curl -L https://repo1.maven.org/maven2/io/debezium/debezium-connector-sqlserver/latest/debezium-connector-sqlserver-latest-plugin.tar.gz | tar -xz -C /kafka/connect &&
-      /docker-entrypoint.sh"
 
   postgres:
     image: postgres:latest
