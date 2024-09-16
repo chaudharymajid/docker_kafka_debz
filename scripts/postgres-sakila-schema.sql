@@ -319,9 +319,9 @@ CREATE TABLE customer (
     email character varying(50),
     address_id smallint NOT NULL,
     activebool boolean DEFAULT true NOT NULL,
-    create_date date DEFAULT ('now'::text)::date NOT NULL,
+    create_date timestamp without time zone DEFAULT now(),
     last_update timestamp without time zone DEFAULT now(),
-    active integer
+    active character varying
 );
 
 

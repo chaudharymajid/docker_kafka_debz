@@ -17,7 +17,22 @@
     "pk.mode": "none",
     "batch.size": "3000",
     "max.retries": "10",
-    "retry.backoff.ms": "3000",
-    "table.name.format": "public.${topic:dbserver1.sakila.dbo.(.*)->$1}"
+    "retry.backoff.ms": "3000",   
+    "transforms": "routeActor,routeFilm,routeCustomer",
+    "transforms.routeActor.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.routeActor.regex": "dbserver1.sakila.dbo.actor",
+    "transforms.routeActor.replacement": "actor",
+    "transforms.routeFilm.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.routeFilm.regex": "dbserver1.sakila.dbo.film",
+    "transforms.routeFilm.replacement": "film",
+    "transforms.routeCustomer.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.routeCustomer.regex": "dbserver1.sakila.dbo.customer",
+    "transforms.routeCustomer.replacement": "customer",    
+    "table.name.format": "public.${topic}",
+    "transforms": "TimestampConverter",
+    "transforms.TimestampConverter.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.TimestampConverter.field": "create_date",
+    "transforms.TimestampConverter.target.type": "Timestamp",
+    "transforms.TimestampConverter.format": "yyyy-MM-dd HH:mm:ss"
   }
 }
