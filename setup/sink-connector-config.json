@@ -20,7 +20,7 @@
     "retry.backoff.ms": "3000",
     "transforms": "routeTables,TimestampConverter",
     "transforms.routeTables.type": "org.apache.kafka.connect.transforms.RegexRouter",
-    "transforms.routeTables.regex": "dbserver1.sakila.dbo.(actor|category|language)",
+    "transforms.routeTables.regex": "dbserver1.sakila.dbo.(.*)",
     "transforms.routeTables.replacement": "public.$1", 
     "transforms.TimestampConverter.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
     "transforms.TimestampConverter.field": "last_update",
