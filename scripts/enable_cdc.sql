@@ -16,7 +16,7 @@ GO
 -- Enable CDC for the film table
 EXEC sys.sp_cdc_enable_table
     @source_schema = N'dbo',
-    @source_name = N'film',
+    @source_name = N'category',
     @role_name = NULL,
     @supports_net_changes = 1;
 GO
@@ -24,7 +24,7 @@ GO
 -- Enable CDC for the customer table
 EXEC sys.sp_cdc_enable_table
     @source_schema = N'dbo',
-    @source_name = N'customer',
+    @source_name = N'language',
     @role_name = NULL,
     @supports_net_changes = 1;
 GO

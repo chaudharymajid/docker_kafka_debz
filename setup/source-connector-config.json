@@ -9,7 +9,7 @@
     "database.password": "Delta@12345678",
     "database.server.name": "dbserver1",
     "database.names": "sakila",
-    "table.include.list": "dbo.actor,dbo.film,dbo.customer",
+    "table.include.list": "dbo.actor,dbo.category,dbo.language",
     "database.history.kafka.bootstrap.servers": "kafka:29092",
     "database.history.kafka.topic": "schema-changes.sakila",
     "include.schema.changes": "true",
